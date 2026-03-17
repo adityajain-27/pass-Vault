@@ -1,0 +1,283 @@
+# Pass-Vault Frontend — Build Guide
+
+> **For the teammate building the UI.** This guide pairs with the backend guide. You handle ALL encryption — the backend never sees plaintext passwords or vault data.
+
+---
+
+## Tech Stack
+
+- **Framework:** React (Vite)
+- **Encryption:** CryptoJS (AES-256)
+- **HTTP Client:** Axios
+- **Routing:** React Router v6
+- **State:** React Context + localStorage
+- **Styling:** Your choice (Tailwind recommended)
+
+---
+
+## Step 1 — Project Setup
+
+```bash
+npm create vite@latest pass-vault-frontend -- --template react
+cd pass-vault-frontend
+npm install axios cryptojs react-router-dom
+```
+
+### Folder structure to create:
+```
+src/
+  api/
+    axiosInstance.js
+    auth.api.js
+    vault.api.js
+    utils.api.js
+  context/
+    AuthContext.jsx
+  crypto/
+    cryptoUtils.js
+  pages/
+    Login.jsx
+    Register.jsx
+    Dashboard.jsx
+  components/
+    VaultEntry.jsx
+    AddEntryModal.jsx
+    StrengthMeter.jsx
+  hooks/
+    useVault.js
+  App.jsx
+  main.jsx
+.env
+```
+
+### `.env`
+```
+VITE_API_URL=http://localhost:5000/api
+```
+
+---
+
+## Step 2 — Crypto Utils (`src/crypto/cryptoUtils.js`)
+
+> **This is the most critical file. The master password never leaves this file as plaintext.**
+
+### What to implement:
+
+#### `deriveMasterKey(masterPassword)`
+- Use `CryptoJS.SHA256(masterPassword).toString()` to derive a key
+- Return the hex string — this is your **encryption key**
+- This key is stored in memory only (never in localStorage)
+
+#### `hashForServer(masterPassword)`
+- Use `CryptoJS.SHA256(masterPassword + "passvault-server-salt").toString()`
+- Return this — it's what you send to the backend as `masterPasswordHash`
+- The backend hashes this again with bcrypt
+
+#### `encryptData(plaintext, masterKey)`
+- `CryptoJS.AES.encrypt(JSON.stringify(plaintext), masterKey).toString()`
+- Return the ciphertext string
+
+#### `decryptData(ciphertext, masterKey)`
+- `CryptoJS.AES.decrypt(ciphertext, masterKey)`
+- `.toString(CryptoJS.enc.Utf8)` then `JSON.parse()`
+- Wrap in try/catch — return `null` on failure
+
+> [!WARNING]
+> Never store `masterKey` in localStorage or sessionStorage. Keep it in React state/context only. It disappears on page refresh (user must re-enter master password).
+
+---
+
+## Step 3 — Axios Instance (`src/api/axiosInstance.js`)
+
+- Create an axios instance with `baseURL: import.meta.env.VITE_API_URL`
+- Add a **request interceptor**: read `accessToken` from localStorage, attach as `Authorization: Bearer <token>`
+- Add a **response interceptor**: on 401, call the refresh endpoint, update localStorage, retry original request once. On refresh failure, clear localStorage and redirect to `/login`
+
+---
+
+## Step 4 — API Modules
+
+### `src/api/auth.api.js`
+```js
+// Export these functions (use axiosInstance):
+// register({ email, masterPasswordHash })  → POST /auth/register
+// login({ email, masterPasswordHash })     → POST /auth/login
+// refresh({ refreshToken })                → POST /auth/refresh
+// logout({ refreshToken })                 → POST /auth/logout
+```
+
+### `src/api/vault.api.js`
+```js
+// getEntries()              → GET /vault
+// createEntry({ label, encryptedData })    → POST /vault
+// updateEntry(id, { label, encryptedData }) → PUT /vault/:id
+// deleteEntry(id)           → DELETE /vault/:id
+```
+
+### `src/api/utils.api.js`
+```js
+// checkStrength(password)              → POST /utils/strength
+// checkBreach(password)                → GET /utils/breach-check?password=xxx
+```
+
+---
+
+## Step 5 — Auth Context (`src/context/AuthContext.jsx`)
+
+Store in Context:
+- `accessToken` (from localStorage on init)
+- `masterKey` (in-memory state only — **never persisted**)
+- `isAuthenticated` (derived from accessToken presence)
+
+**`register(email, masterPassword)`:**
+1. Call `hashForServer(masterPassword)` → get `masterPasswordHash`
+2. Call `register({ email, masterPasswordHash })`
+3. Save `accessToken` + `refreshToken` to localStorage
+4. Derive `masterKey = deriveMasterKey(masterPassword)` and store in context state
+
+**`login(email, masterPassword)`:**
+1. Same flow as register but call `login()` API
+2. Derive and store `masterKey` in memory
+
+**`logout()`:**
+1. Call `logout()` API with stored refreshToken
+2. Clear localStorage
+3. Set `masterKey` to null in state
+4. Redirect to `/login`
+
+---
+
+## Step 6 — Pages
+
+### `src/pages/Register.jsx`
+Fields: Email, Master Password, Confirm Password
+
+On submit:
+1. Validate passwords match
+2. Call `auth.register(email, masterPassword)` from context
+3. On success → navigate to `/dashboard`
+4. Show error messages inline
+
+> [!IMPORTANT]
+> Show a warning: *"Your master password cannot be recovered. We never store it."*
+
+---
+
+### `src/pages/Login.jsx`
+Fields: Email, Master Password
+
+On submit:
+1. Call `auth.login(email, masterPassword)` from context
+2. On success → navigate to `/dashboard`
+
+---
+
+### `src/pages/Dashboard.jsx`
+
+On mount:
+1. Fetch all vault entries via `getEntries()`
+2. For each entry: `decryptData(entry.encryptedData, masterKey)` to get `{ site, username, password }`
+3. Render a list of `<VaultEntry>` cards
+
+If `masterKey` is null (user refreshed page):
+- Show a **"Re-enter master password"** prompt
+- On submit, re-derive `masterKey` and try decrypting one known entry to validate
+
+---
+
+## Step 7 — Components
+
+### `VaultEntry.jsx`
+Props: `{ label, decryptedData, onEdit, onDelete }`
+
+Render:
+- Label (site name)
+- Username (show/hide toggle)
+- Password field (hidden by default, reveal on button click)
+- Copy-to-clipboard button for password
+- Edit / Delete buttons
+
+### `AddEntryModal.jsx`
+Fields: Label (site name), Username, Password
+
+On submit:
+1. Build plaintext object: `{ username, password }`
+2. `encryptData({ username, password }, masterKey)` → get ciphertext
+3. Call `createEntry({ label, encryptedData: ciphertext })`
+4. Close modal, refresh list
+
+### `StrengthMeter.jsx`
+Props: `{ password }`
+
+On every keystroke:
+1. Call `checkStrength(password)` API (debounce 300ms)
+2. Show a colored progress bar (score 0–100)
+3. Show feedback tips below
+
+---
+
+## Step 8 — Routing (`src/App.jsx`)
+
+```jsx
+<Routes>
+  <Route path="/login" element={<Login />} />
+  <Route path="/register" element={<Register />} />
+  <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+  <Route path="/" element={<Navigate to="/dashboard" />} />
+</Routes>
+```
+
+**`PrivateRoute`:** Check `isAuthenticated` from context. If false → redirect to `/login`.
+
+---
+
+## Step 9 — Security Checklist
+
+| Rule | Why |
+|---|---|
+| Never store `masterKey` outside memory | If localStorage leaks, vault stays encrypted |
+| Always `decryptData` client-side only | Backend never sees plaintext |
+| Debounce breach-check API calls | Avoid hammering HIBP on every keystroke |
+| Clear clipboard after 30s on copy | Prevent clipboard sniffing |
+| Session timeout on idle (optional) | Clear `masterKey` after 5min inactivity |
+
+---
+
+## Step 10 — Environment & Build
+
+```bash
+# Development
+npm run dev
+
+# Production build
+npm run build
+```
+
+Set `VITE_API_URL` to your deployed backend URL for production.
+
+---
+
+## Data Flow Summary
+
+```
+Master Password (user input)
+    │
+    ├──→ deriveMasterKey()  ──→ masterKey (in memory)
+    │                               │
+    │                        encryptData() / decryptData()
+    │
+    └──→ hashForServer()  ──→ masterPasswordHash  ──→ Backend (bcrypt hashes again)
+```
+
+---
+
+## File Order to Write (Recommended)
+
+1. `cryptoUtils.js` — test in browser console first
+2. `axiosInstance.js`
+3. API modules (`auth.api.js`, `vault.api.js`, `utils.api.js`)
+4. `AuthContext.jsx`
+5. `Register.jsx` → `Login.jsx`
+6. `VaultEntry.jsx` → `AddEntryModal.jsx` → `StrengthMeter.jsx`
+7. `Dashboard.jsx`
+8. `App.jsx` routing + `PrivateRoute`
