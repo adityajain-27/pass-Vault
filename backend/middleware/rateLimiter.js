@@ -7,7 +7,7 @@ export const globalLimiter = rateLimit({
 });
 
 export const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
+    windowMs: 15 * 60 * 1000, // it means 15 minutes
+    max: 10, // it means 10 attempts
     message: {success:false, message: "Too many authentication attempts from this IP, please try again after 15 minutes"}
 });
