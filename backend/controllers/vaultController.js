@@ -29,6 +29,7 @@ export const createEntry = async (req, res) => {
             createdAt: entry.createdAt
         });
     } catch (error) {
+        console.error("createEntry error:",error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
