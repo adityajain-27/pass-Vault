@@ -1,14 +1,33 @@
 import express from "express";
 import dotenv from "dotenv";
+import helmet from "helmet";
+import cors from "cors";
+
 import connectDB from "./config/db.js";
+import { globalLimiter } from "./middleware/rateLimiter.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+import authRoutes from "./routes/auth.routes.js";
+import vaultRoutes from "./routes/vault_routes.js";
 dotenv.config();
 connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000
+app.use(helmet());
+app.use(cors({origin:process.env.FRONTEND_URL,credentials:true}))
+app.use(express.json())
+app.use(globalLimiter);      
 
-app.get("/",(req,res)=>{
-    res.send("Hello World Setting things for Pass-Vault Manager")
-})
+//routes
+app.use("/api/auth",authRoutes);
+app.use("/api/vault",vaultRoutes)
+
+app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+app.use((req, res) => {
+    res.status(404).json({ message: "Route not found" });
+});
+
 app.use(errorHandler); 
 
 app.listen(PORT,()=>{
