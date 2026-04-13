@@ -11,14 +11,14 @@ export const getEntries = async (req, res) => {
 
 export const createEntry = async (req, res) => {
     try {
-        const { label, encryptedData } = req.body;
+        const { label, encryptedData, category, isFavorite } = req.body;
         const userId = req.user.userId;
 
         if (!label || !encryptedData) {
             return res.status(400).json({ message: "Label and encryptedData are required" });
         }
 
-        const entry = new VaultEntry({ userId, label, encryptedData });
+        const entry = new VaultEntry({ userId, label, encryptedData, category, isFavorite });
         await entry.save();
 
         // return only metadata, never return encryptedData in response
@@ -26,6 +26,8 @@ export const createEntry = async (req, res) => {
             _id: entry._id,
             label: entry.label,
             userId: entry.userId,
+            category: entry.category,
+            isFavorite: entry.isFavorite,
             createdAt: entry.createdAt
         });
     } catch (error) {
@@ -36,7 +38,7 @@ export const createEntry = async (req, res) => {
 
 export const updateEntry = async (req, res) => {
     try {
-        const { label, encryptedData } = req.body;
+        const { label, encryptedData, category, isFavorite } = req.body;
 
         // find by both _id and userId to prevent one user accessing another's data
         const entry = await VaultEntry.findOne({ _id: req.params.id, userId: req.user.userId });
@@ -47,9 +49,11 @@ export const updateEntry = async (req, res) => {
 
         entry.label = label || entry.label;
         entry.encryptedData = encryptedData || entry.encryptedData;
+        if (category !== undefined) entry.category = category;
+        if (isFavorite !== undefined) entry.isFavorite = isFavorite;
         await entry.save();
 
-        res.status(200).json({ _id: entry._id, label: entry.label, updatedAt: entry.updatedAt });
+        res.status(200).json({ _id: entry._id, label: entry.label, category: entry.category, isFavorite: entry.isFavorite, updatedAt: entry.updatedAt });
     } catch (error) {
         res.status(500).json({ message: "Internal Server Error" });
     }

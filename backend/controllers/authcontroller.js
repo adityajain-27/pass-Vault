@@ -21,7 +21,24 @@ export const register = async (req, res) => {
             masterPasswordHash: hash
         })
         await newuser.save()
-        res.status(201).json({ message: "User Created Successfully" })
+         const accessToken = jwt.sign(
+            { userId: newuser._id },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN || "15m" }
+        );
+        const refreshToken = jwt.sign(
+            { userId: newuser._id },
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: "7d" }
+        );
+        newuser.refreshToken = refreshToken;
+        await newuser.save();
+        res.status(201).json({ 
+            message: "User Created Successfully",
+            accessToken,
+            refreshToken,
+            userId: newuser._id
+        });
     }
     catch (error) {
         console.log(error)
@@ -57,7 +74,7 @@ export const login = async (req, res) => {
         
         const refreshToken = jwt.sign(
             { userId: user._id }, 
-            process.env.JWT_REFRESH_SECRET || 'fallback_refresh_secret', 
+            process.env.JWT_REFRESH_SECRET, 
             { expiresIn: "7d" }
         );
         

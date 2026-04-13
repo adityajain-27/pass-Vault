@@ -14,7 +14,7 @@ export const strengthCheck = (req, res) => {
 };
 
 export const breachCheck = async (req, res) => {
-    const { password } = req.body;
+    const { password } = req.query;
     if (!password) {
         return res.status(400).json({
             message: "Password query parameter is required"

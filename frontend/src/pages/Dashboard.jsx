@@ -8,7 +8,7 @@ import AddEntryModal from '../components/AddEntryModal';
 import EditEntryModal from '../components/EditEntryModal';
 
 const Dashboard = ({ filterFavorites = false }) => {
-  const { masterKey, unlockVault, logout } = useContext(AuthContext);
+  const { masterKey, unlockVault, logout, setMasterKey } = useContext(AuthContext);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const categoryFromUrl = queryParams.get('category') || 'All';
@@ -37,6 +37,15 @@ const Dashboard = ({ filterFavorites = false }) => {
         const data = decryptData(entry.encryptedData, masterKey);
         return { ...entry, decryptedData: data };
       }).filter(entry => entry.decryptedData !== null);
+
+      // Wrong master password detection
+      if (encryptedEntries.length > 0 && decrypted.length === 0) {
+        setMasterKey(null);
+        setUnlockError('Wrong master password. Please try again.');
+        setUnlockPassword('');
+        return;
+      }
+
       setEntries(decrypted);
     } catch (err) {
       console.error('Failed fetching entries', err);

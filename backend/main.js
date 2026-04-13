@@ -8,6 +8,8 @@ import { globalLimiter } from "./middleware/rateLimiter.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import authRoutes from "./routes/auth.routes.js";
 import vaultRoutes from "./routes/vault_routes.js";
+import utilsRoutes from "./routes/utils.routes.js";
+
 dotenv.config();
 connectDB();
 const app = express();
@@ -19,13 +21,17 @@ app.use(globalLimiter);
 
 //routes
 app.use("/api/auth",authRoutes);
-app.use("/api/vault",vaultRoutes)
+app.use("/api/vault",vaultRoutes);
+app.use("/api/utils", utilsRoutes);
 
 app.get("/api/health", (req, res) => {
     res.status(200).json({ status: "ok" });
 });
-app.use((req, res) => {
-    res.status(404).json({ message: "Route not found" });
+app.use((req, res, next) => {
+    const error = new Error("Route not found");
+    error.statuscode = 404;
+    next(error);
+    // res.status(404).json({ message: "Route not found" });
 });
 
 app.use(errorHandler); 
