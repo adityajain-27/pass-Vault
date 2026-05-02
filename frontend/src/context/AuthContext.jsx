@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { register as registerApi, login as loginApi, logout as logoutApi, googleLoginApi } from '../api/auth.api';
+import { register as registerApi, login as loginApi, logout as logoutApi } from '../api/auth.api';
 import { hashForServer, deriveMasterKey } from '../crypto/cryptoUtils';
 
 export const AuthContext = createContext();
@@ -22,12 +22,9 @@ export const AuthProvider = ({ children }) => {
     setMasterKey(deriveMasterKey(masterPassword));
   };
 
-  const login = async (email, masterPassword, totpToken) => {
+  const login = async (email, masterPassword) => {
     const masterPasswordHash = hashForServer(masterPassword);
-    const data = await loginApi({ email, masterPasswordHash, totpToken });
-
-    // Backend signals that 2FA code is needed
-    if (data.requires2FA) return { requires2FA: true };
+    const data = await loginApi({ email, masterPasswordHash });
 
     setAccessToken(data.accessToken);
     localStorage.setItem('accessToken', data.accessToken);
@@ -35,18 +32,6 @@ export const AuthProvider = ({ children }) => {
     setMasterKey(deriveMasterKey(masterPassword));
   };
 
-  const googleLogin = async (idToken) => {
-    const data = await googleLoginApi({ idToken });
-    
-    setAccessToken(data.accessToken);
-    localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('refreshToken', data.refreshToken);
-    setUser(data.user);
-
-    // If new user or no password set, we need setup
-    // the UI will handle prompting for the Vault Password
-    return { needsSetup: data.needsSetup };
-  };
 
   const logout = async () => {
     try {
@@ -69,7 +54,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, accessToken, masterKey, user, register, login, googleLogin, logout, unlockVault, setMasterKey }}>
+    <AuthContext.Provider value={{ isAuthenticated, accessToken, masterKey, user, register, login, logout, unlockVault, setMasterKey }}>
       {children}
     </AuthContext.Provider>
   );

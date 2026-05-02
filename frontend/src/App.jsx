@@ -10,7 +10,6 @@ import BreachWatch from './pages/BreachWatch';
 import Landing from './pages/Landing';
 import SecureNotes from './pages/SecureNotes';
 import PasswordGenerator from './pages/PasswordGenerator';
-import TwoFactorSetup from './pages/TwoFactorSetup';
 import CreditCards from './pages/CreditCards';
 import MouseGlow from './components/MouseGlow';
 import './index.css';
@@ -50,7 +49,6 @@ const AppRoutes = () => {
       <Route path="/generator" element={<PrivateRoute><PasswordGenerator /></PrivateRoute>} />
       <Route path="/security-audit" element={<PrivateRoute><SecurityAudit /></PrivateRoute>} />
       <Route path="/breach-watch" element={<PrivateRoute><BreachWatch /></PrivateRoute>} />
-      <Route path="/2fa" element={<PrivateRoute><TwoFactorSetup /></PrivateRoute>} />
       <Route path="/cards" element={<PrivateRoute><CreditCards /></PrivateRoute>} />
       <Route path="/favorites" element={<PrivateRoute><Dashboard filterFavorites={true} /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/" />} />
@@ -59,21 +57,14 @@ const AppRoutes = () => {
 };
 
 
-import { GoogleOAuthProvider } from '@react-oauth/google';
-
 function App() {
-  // IMPORTANT: Replace with your actual Google Client ID from Google Cloud Console
-  const GOOGLE_CLIENT_ID = "242976238918-peuvihimgpjosrvn4hkabqqpq13dlont.apps.googleusercontent.com";
-
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <AuthProvider>
-        <MouseGlow />
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </AuthProvider>
-    </GoogleOAuthProvider>
+    <AuthProvider>
+      <MouseGlow />
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
