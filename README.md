@@ -63,8 +63,7 @@ pass-Vault/
 │   │   │   ├── auth.api.js     # Auth API calls
 │   │   │   ├── vault.api.js    # Vault CRUD API calls
 │   │   │   ├── breach.api.js   # Client-side HIBP breach check
-│   │   │   ├── utils.api.js    # Strength/breach via backend
-│   │   │   └── twoFactor.api.js# 2FA API (future)
+│   │   │   └── utils.api.js    # Strength/breach via backend
 │   │   ├── components/
 │   │   │   ├── AddEntryModal.jsx    # Create new vault entry
 │   │   │   ├── EditEntryModal.jsx   # Edit existing entry
@@ -81,15 +80,14 @@ pass-Vault/
 │   │   │   └── useVault.js     # Reusable vault fetch/decrypt hook
 │   │   ├── pages/
 │   │   │   ├── Landing.jsx         # Marketing landing page
-│   │   │   ├── Login.jsx           # Login with 2FA support
+│   │   │   ├── Login.jsx           # Login
 │   │   │   ├── Register.jsx        # Registration with strength meter
 │   │   │   ├── Dashboard.jsx       # Main vault view
 │   │   │   ├── SecureNotes.jsx     # Notes editor (split pane)
 │   │   │   ├── CreditCards.jsx     # Credit card vault
 │   │   │   ├── PasswordGenerator.jsx # Password generator tool
 │   │   │   ├── SecurityAudit.jsx   # Vault health score
-│   │   │   ├── BreachWatch.jsx     # HIBP breach scanner
-│   │   │   └── TwoFactorSetup.jsx  # 2FA setup (future)
+│   │   │   └── BreachWatch.jsx     # HIBP breach scanner
 │   │   ├── App.jsx             # Routing + PrivateRoute
 │   │   ├── main.jsx            # React entry point
 │   │   └── index.css           # Global styles + design system
@@ -288,7 +286,7 @@ Navigate to [http://localhost:5173](http://localhost:5173) in your browser.
 ## 📸 Screenshots
 
 ### Landing Page
-The marketing page with animated scroll reveals, pricing section, and feature showcase.
+The marketing page with animated scroll reveals and feature showcase.
 
 ### Vault Dashboard
 The main password vault with search, category filtering, and card-based entry display.
