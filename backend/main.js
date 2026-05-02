@@ -9,9 +9,13 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import authRoutes from "./routes/auth.routes.js";
 import vaultRoutes from "./routes/vault_routes.js";
 import utilsRoutes from "./routes/utils.routes.js";
-
+import dns from 'dns';
+dns.setServers(["1.1.1.1" , "8.8.8.8"]);
 dotenv.config();
 connectDB();
+
+
+
 const app = express();
 const PORT = process.env.PORT || 5000
 app.use(helmet());
