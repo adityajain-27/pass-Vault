@@ -58,7 +58,7 @@ const Landing = () => {
           </span>
         </div>
         <div style={{ display: 'flex', gap: '36px', alignItems: 'center' }}>
-          {['Features', 'Security', 'Pricing'].map(item => (
+          {['Features', 'Security'].map(item => (
             <a key={item} href={`#${item.toLowerCase()}`} style={{
               color: 'rgba(255,255,255,0.65)', fontSize: '0.95rem',
               textDecoration: 'none', transition: 'color 0.2s ease',
@@ -328,77 +328,6 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="pricing" style={{
-        padding: '120px 64px',
-        background: '#0d1118',
-        borderTop: '1px solid rgba(255,255,255,0.06)'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div className="scroll-reveal" style={{ textAlign: 'center', marginBottom: '80px' }}>
-            <h2 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '16px', letterSpacing: '-1px' }}>
-              Simple, Transparent <span style={{ color: '#F5C518' }}>Pricing.</span>
-            </h2>
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.2rem' }}>
-              Choose the plan that fits your digital life.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
-            {/* Free */}
-            <div className="scroll-reveal glass-panel" style={{ padding: '48px 40px', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px', color: 'rgba(255,255,255,0.5)' }}>Personal</div>
-              <div style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '24px' }}>$0 <span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.4)' }}>/mo</span></div>
-              <ul style={{ listStyle: 'none', padding: 0, marginBottom: '40px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {['Unlimited Passwords', '1 Device Sync', 'Security Audit', '2FA Support', 'Password Generator'].map(f => (
-                  <li key={f} style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.7)', display: 'flex', gap: '10px' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/register" className="btn-secondary" style={{ display: 'block', padding: '14px' }}>Start Free Trial</Link>
-            </div>
-
-            {/* Pro */}
-            <div className="scroll-reveal glass-panel" style={{ 
-              padding: '60px 40px', textAlign: 'center', 
-              border: '2px solid var(--primary)', 
-              transform: 'scale(1.05)',
-              position: 'relative',
-              boxShadow: '0 24px 80px rgba(245, 197, 24, 0.15)'
-            }}>
-              <div style={{ 
-                position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)',
-                background: 'var(--primary)', color: '#000', padding: '4px 16px', borderRadius: '20px',
-                fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase'
-              }}>Most Popular</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px', color: 'rgba(255,255,255,0.8)' }}>Premium Plus</div>
-              <div style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '24px' }}>$2.99 <span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.4)' }}>/mo</span></div>
-              <ul style={{ listStyle: 'none', padding: 0, marginBottom: '40px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {['Everything in Free', 'Unlimited Device Sync', 'BreachWatch Monitoring', 'Priority Support', 'Self-Destruct Messages'].map(f => (
-                  <li key={f} style={{ fontSize: '0.95rem', color: '#fff', display: 'flex', gap: '10px' }}>
-                    <span style={{ color: 'var(--primary)' }}>✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/register" className="btn-primary" style={{ display: 'block', padding: '16px', fontWeight: '700' }}>Get Premium Now</Link>
-            </div>
-
-            {/* Business */}
-            <div className="scroll-reveal glass-panel" style={{ padding: '48px 40px', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px', color: 'rgba(255,255,255,0.5)' }}>Enterprise</div>
-              <div style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '24px' }}>$9.99 <span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.4)' }}>/mo</span></div>
-              <ul style={{ listStyle: 'none', padding: 0, marginBottom: '40px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {['Everything in Premium', 'Admin Dashboard', 'Shared Team Folders', 'Audit Logs', 'SSO & Azure Integration'].map(f => (
-                  <li key={f} style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.7)', display: 'flex', gap: '10px' }}>
-                    <span style={{ color: '#3b82f6' }}>✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/register" className="btn-secondary" style={{ display: 'block', padding: '14px' }}>Contact Sales</Link>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ── CTA BANNER ── */}
       <section className="scroll-reveal" style={{
