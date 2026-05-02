@@ -27,7 +27,6 @@ const Sidebar = () => {
         { name: 'Password Generator', path: '/generator', icon: '⚡' },
         { name: 'Security Audit', path: '/security-audit', icon: '🛡️' },
         { name: 'BreachWatch', path: '/breach-watch', icon: '👁️' },
-        { name: 'Two-Factor Auth', path: '/2fa', icon: '🔐' },
     ];
 
     return (
