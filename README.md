@@ -54,6 +54,8 @@ pass-Vault/
 │   │   └── breachCheck.js      # HIBP k-anonymity check
 │   ├── main.js                 # Express app entry point
 │   ├── .env                    # Environment variables
+│   ├── Dockerfile              # Node.js container blueprint
+│   ├── .dockerignore           # Docker build exclusions
 │   └── package.json
 │
 ├── frontend/                   # React + Vite SPA
@@ -92,10 +94,14 @@ pass-Vault/
 │   │   │   └── BreachWatch.jsx     # HIBP breach scanner
 │   │   ├── App.jsx             # Routing + PrivateRoute
 │   │   ├── main.jsx            # React entry point
-│   │   └── index.css           # Global styles + design system
+│   │   ├── index.css           # Global styles + design system
 │   ├── .env                    # Frontend environment variables
+│   ├── Dockerfile              # Multi-stage Nginx build
+│   ├── nginx.conf              # Nginx SPA routing
+│   ├── .dockerignore           # Docker build exclusions
 │   └── package.json
 │
+├── docker-compose.yml          # Local container orchestration
 └── README.md
 ```
 
