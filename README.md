@@ -7,6 +7,8 @@
 ![Node](https://img.shields.io/badge/node-%3E%3D18-green.svg)
 ![React](https://img.shields.io/badge/react-19-61DAFB.svg)
 
+**🚀 Live Demo:** [https://pass-vault-frontend-one.vercel.app/](https://pass-vault-frontend-one.vercel.app/)
+
 ---
 
 ## ✨ Features
@@ -136,6 +138,19 @@ pass-Vault/
 ---
 
 ## 🚀 Quick Start
+
+### 🐳 The Easy Way (Docker)
+1. Install [Docker](https://www.docker.com/).
+2. Clone the repository and create the `.env` files in both the frontend and backend folders (see the Manual Way below for the variables).
+3. Run the following command in the root folder:
+```bash
+docker-compose up --build
+```
+4. Open your browser and go to `http://localhost:3000`.
+
+---
+
+### 💻 The Manual Way
 
 ### Prerequisites
 
