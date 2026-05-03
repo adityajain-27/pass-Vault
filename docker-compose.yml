@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    # 1. Look inside the 'backend' folder for the Dockerfile
+    build: ./backend
+    # 2. Name the container
+    container_name: passvault-backend
+    # 3. Expose port 5000 on your machine and map it to port 5000 in the container
+    ports:
+      - "5000:5000"
+    # 4. Load your local backend environment variables directly into the container
+    env_file:
+      - ./backend/.env
+    # 5. Automatically restart if it crashes
+    restart: unless-stopped
+
+  frontend:
+    # 1. Look inside the 'frontend' folder for the Dockerfile
+    build: ./frontend
+    # 2. Name the container
+    container_name: passvault-frontend
+    # 3. Map port 80 (standard web port) in the container to port 3000 on your local machine
+    ports:
+      - "3000:80"
+    # 4. Depend on the backend starting up first
+    depends_on:
+      - backend
+    # 5. Automatically restart if it crashes
+    restart: unless-stopped
