@@ -7,7 +7,7 @@
 ![Node](https://img.shields.io/badge/node-%3E%3D18-green.svg)
 ![React](https://img.shields.io/badge/react-19-61DAFB.svg)
 
-**🚀 Live Demo:** [Live Project Application](https://pass-vault-frontend-one.vercel.app/)
+**🚀 Live Demo:** [Pass-Vault](https://pass-vault-frontend-one.vercel.app/)
 
 ---
 
