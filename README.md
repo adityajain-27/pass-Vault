@@ -150,7 +150,7 @@ pass-Vault/
 2. Clone the repository and create the `.env` files in both the frontend and backend folders (see the Manual Way below for the variables).
 3. Run the following command in the root folder:
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 4. Open your browser and go to `http://localhost:3000`.
 
